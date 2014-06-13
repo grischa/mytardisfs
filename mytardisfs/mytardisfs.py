@@ -541,7 +541,7 @@ class MyFS(fuse.Fuse):
                 try:
                     expdatasetcounts = ast.literal_eval(stdout.strip())
                 except:
-                    expdatasetcounts = []
+                    expdatasetcounts = {}
 
                 # Doesn't check for deleted experiments,
                 # only adds to FILES dictionary.
