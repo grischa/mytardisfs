@@ -19,6 +19,7 @@ import fdsend
 import sys
 import getpass
 import traceback
+import utils
 
 
 def run():
@@ -50,16 +51,9 @@ def run():
     sock.listen(1)
     conn, addr = sock.accept()
 
-    sys.path.append(_mytardis_install_dir)
-    for egg in os.listdir(os.path.join(_mytardis_install_dir, "eggs")):
-        sys.path.append(os.path.join(_mytardis_install_dir, "eggs", egg))
-    from django.core.management import setup_environ
-    from django.core.exceptions import ObjectDoesNotExist
-    from tardis import settings
-    setup_environ(settings)
+    utils.setup_mytardis_paths(_mytardis_install_dir)
 
     from tardis.tardis_portal.models import Dataset_File, Experiment
-    from tardis.tardis_portal.models import UserAuthentication
 
     found_user = False
     mytardis_user = None
@@ -68,10 +62,7 @@ def run():
     staff_or_superuser = False
     found_datafile_in_experiment = False
     try:
-        user_auth = UserAuthentication.objects\
-            .get(username=os.environ['SUDO_USER'],
-                 authenticationMethod=_auth_provider)
-        mytardis_user = user_auth.userProfile.user
+        mytardis_user = utils.get_user(os.environ['SUDO_USER'], _auth_provider)
         # logger.debug("Primary MyTardis username: " + mytardis_user.username)
         found_user = True
         staff_or_superuser = mytardis_user.is_staff or \
