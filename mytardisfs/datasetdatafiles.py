@@ -20,7 +20,7 @@ import os
 import sys
 import getpass
 import traceback
-
+import utils
 
 def run():
     if getpass.getuser() != "mytardis" or "SUDO_USER" not in os.environ:
@@ -36,12 +36,7 @@ def run():
     _mytardis_install_dir = sys.argv[1].strip('"')
     _auth_provider = sys.argv[2]
 
-    sys.path.append(_mytardis_install_dir)
-    for egg in os.listdir(os.path.join(_mytardis_install_dir, "eggs")):
-        sys.path.append(os.path.join(_mytardis_install_dir, "eggs", egg))
-    from django.core.management import setup_environ
-    from tardis import settings
-    setup_environ(settings)
+    utils.setup_mytardis_paths(_mytardis_install_dir)
 
     from tardis.tardis_portal.models import Dataset, Dataset_File, Experiment
     from tardis.tardis_portal.models import UserAuthentication
@@ -57,10 +52,7 @@ def run():
     staff_or_superuser = False
     found_dataset_in_experiment = False
     try:
-        userAuth = UserAuthentication.objects \
-            .get(username=os.environ['SUDO_USER'],
-                 authenticationMethod=_auth_provider)
-        mytardis_user = userAuth.userProfile.user
+        mytardis_user = utils.get_user(os.environ['SUDO_USER'], _auth_provider)
         # logger.debug("Primary MyTardis username: " + mytardis_user.username)
         # print "Primary MyTardis username: " + mytardis_user.username
         found_user = True
