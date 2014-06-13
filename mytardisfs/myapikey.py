@@ -7,7 +7,7 @@
 import sys
 import os
 import getpass
-import mytardisfs.utils as utils
+import utils
 
 
 def run():
