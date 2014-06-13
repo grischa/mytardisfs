@@ -11,11 +11,11 @@ def setup_mytardis_paths(mytardis_base_path):
     from tardis import settings
     setup_environ(settings)
 
-from django.contrib.auth.models import User
-from tardis.tardis_portal.models import UserAuthentication
-
 
 def get_user(sys_user, auth_method='localdb'):
+    from django.contrib.auth.models import User
+    from tardis.tardis_portal.models import UserAuthentication
+
     try:
         userAuth = UserAuthentication.objects.get(
             username=sys_user, authenticationMethod=auth_method)
